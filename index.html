@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10131b">
+<meta name="description" content="Victor AI — seu assistente pessoal.">
+<title>Victor AI</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0e14;--panel:#121722;--panel2:#191f2c;--line:#293244;--text:#f4f6fb;--muted:#a5aec0;--accent:#7c6cff;--accent2:#9c91ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#17172b 0,#0b0e14 48%);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100dvh}
+.app{min-height:100dvh;display:flex;flex-direction:column;max-width:920px;margin:auto;padding:0 14px}
+header{display:flex;align-items:center;gap:12px;padding:17px 2px;border-bottom:1px solid var(--line)}
+.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#8a7cff,#4b38c9);display:grid;place-items:center;font-weight:800;font-size:20px;box-shadow:0 5px 24px #6655ff44}
+.brand{font-weight:750;font-size:18px;letter-spacing:.2px}.status{font-size:12px;color:var(--muted)}.status:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#f4b84d;margin-right:6px}
+main{flex:1;display:flex;flex-direction:column;padding:26px 0 16px}.welcome{text-align:center;margin:auto auto 24px;max-width:560px}.orb{width:66px;height:66px;margin:0 auto 16px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(145deg,#2b2854,#171b2b);border:1px solid #49416f;font-size:30px}.welcome h1{font-size:clamp(25px,6vw,36px);margin:0 0 8px;letter-spacing:-.7px}.welcome p{margin:0;color:var(--muted);font-size:14px}
+.suggestions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:22px}.suggestion{border:1px solid var(--line);background:#121722bb;color:#dfe3ef;border-radius:14px;padding:12px;text-align:left;font:inherit;font-size:13px;cursor:pointer}.suggestion:hover{border-color:var(--accent)}
+#messages{display:flex;flex-direction:column;gap:14px;width:100%;margin:0 auto;max-width:760px}.message{max-width:88%;padding:12px 15px;border-radius:17px;white-space:pre-wrap;overflow-wrap:anywhere}.user{align-self:flex-end;background:#6655e8;color:white;border-bottom-right-radius:5px}.assistant{align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:5px}.label{display:block;color:#b9b1ff;font-size:11px;font-weight:700;margin-bottom:4px}
+.composer-wrap{position:sticky;bottom:0;padding:10px 0 max(12px,env(safe-area-inset-bottom));background:linear-gradient(transparent,#0b0e14 20%)}
+.composer{display:flex;gap:9px;align-items:flex-end;padding:9px;border:1px solid #343d52;background:#151a26;border-radius:19px;box-shadow:0 10px 40px #0004}
+textarea{flex:1;resize:none;min-height:42px;max-height:130px;border:0;outline:0;background:transparent;color:var(--text);font:inherit;padding:9px 7px}textarea::placeholder{color:#818ba0}
+.send{width:43px;height:43px;border:0;border-radius:13px;background:var(--accent);color:white;font-size:19px;cursor:pointer}.send:disabled{opacity:.45;cursor:not-allowed}
+.disclaimer{text-align:center;color:#727d91;font-size:11px;padding:8px 0 0}.tag{font-size:11px;color:#b9b1ff;border:1px solid #49416f;padding:3px 8px;border-radius:20px;margin-left:auto}
+@media(min-width:650px){.app{padding:0 24px}header{padding:20px 2px}.suggestions{grid-template-columns:repeat(2,minmax(0,230px));justify-content:center}.welcome{margin-top:7vh}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">V</div><div><div class="brand">Victor AI</div><div class="status">Protótipo de interface</div></div><span class="tag">BETA</span></header>
+<main>
+<section class="welcome" id="welcome"><div class="orb">✦</div><h1>Como posso te ajudar?</h1><p>Seu assistente pessoal, em construção. Vamos montar isso juntos.</p>
+<div class="suggestions">
+<button class="suggestion" data-prompt="Me ajude a organizar minhas tarefas de hoje.">✧ Organizar meu dia</button>
+<button class="suggestion" data-prompt="Me explique uma coisa de tecnologia de forma simples.">⌘ Tirar uma dúvida de TI</button>
+<button class="suggestion" data-prompt="Me ajude a planejar um projeto do zero.">◈ Planejar um projeto</button>
+<button class="suggestion" data-prompt="Quais recursos podemos colocar no Victor AI?">＋ Criar recursos novos</button>
+</div></section>
+<div id="messages" aria-live="polite"></div>
+</main>
+<div class="composer-wrap"><form class="composer" id="chatForm"><textarea id="prompt" rows="1" placeholder="Converse com o Victor AI..." aria-label="Mensagem"></textarea><button class="send" id="send" aria-label="Enviar mensagem">↑</button></form><div class="disclaimer">Esta primeira versão é apenas a interface. A IA real será conectada na próxima etapa.</div></div>
+</div>
+<script>
+const form=document.querySelector('#chatForm'),input=document.querySelector('#prompt'),messages=document.querySelector('#messages'),welcome=document.querySelector('#welcome'),send=document.querySelector('#send');
+function addMessage(text,role){const el=document.createElement('div');el.className='message '+role;if(role==='assistant'){const label=document.createElement('span');label.className='label';label.textContent='VICTOR AI';el.appendChild(label)}el.appendChild(document.createTextNode(text));messages.appendChild(el);el.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function submitText(text){const value=(text||input.value).trim();if(!value)return;welcome.hidden=true;addMessage(value,'user');input.value='';input.style.height='auto';addMessage('Ainda estou sendo configurado. Esta tela já está pronta, mas a inteligência artificial ainda não foi conectada. Na próxima etapa vamos ligar o Victor AI a um modelo de IA.','assistant')}
+form.addEventListener('submit',e=>{e.preventDefault();submitText()});input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px'});input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});document.querySelectorAll('[data-prompt]').forEach(b=>b.addEventListener('click',()=>submitText(b.dataset.prompt)));
+</script>
+</body>
+</html>
